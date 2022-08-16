@@ -2,6 +2,7 @@ import { Position } from "./types";
 
 export type MTGATemplate =
   | "home"
+  | "profile"
   | "decks"
   | "collection"
   | "craft"
@@ -13,6 +14,10 @@ export const mtgaTemplatePositions: Record<MTGATemplate, Position> = {
   home: {
     x: 0.023,
     y: 0.002,
+  },
+  profile: {
+    x: 0.073,
+    y: 0.004,
   },
   decks: {
     x: 0.137,
@@ -35,7 +40,7 @@ export const mtgaTemplatePositions: Record<MTGATemplate, Position> = {
     y: 0.25,
   },
   cardPreviewTL: {
-    x: 0.460,
-    y: 0.389,
+    x: 0.411,
+    y: 0.268,
   },
 };
