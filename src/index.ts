@@ -1,5 +1,4 @@
 import {
-  getWindows,
   imageResource,
   Region,
   screen,
@@ -13,65 +12,19 @@ import {
 import fs from "fs";
 import "@nut-tree/template-matcher";
 import { mtgaTemplatePositions } from "./template_positions";
-import { Position, relativePosToGamePos, Size } from "./types";
-
-const GAME_RES: Size = {
-  width: 2560,
-  height: 1440,
-};
+import { gamePosToScreenPos, Position, relativePosToGamePos } from "./util";
+import { configureAutomation } from "./config";
+import {
+  findMTGAProfileRegion,
+  findMTGAWindowRegion,
+  globalImgResources,
+} from "./finder";
 
 const OUT_CARDS_IMGS_DIR = "out/cards";
 
-async function findMTGAWindowRegion(): Promise<Region> {
-  // Search only in a top left corner of the screen
-  const searchRegion = new Region(0, 0, 1000, 1000);
-
-  const mtgaProfileImgRes = await imageResource(
-    "res/templates/mtga_profile_logo.png"
-  );
-
-  const mtgaProfileRegion = await screen.find(mtgaProfileImgRes, {
-    searchRegion: searchRegion,
-  });
-
-  await screen.highlight(mtgaProfileRegion);
-
-  const mtgaProfilePos = relativePosToGamePos(
-    mtgaTemplatePositions.profile,
-    GAME_RES
-  );
-
-  const gameRegion = new Region(
-    Math.max(0, mtgaProfileRegion.left - mtgaProfilePos.x),
-    Math.max(0, mtgaProfileRegion.top - mtgaProfilePos.y),
-    GAME_RES.width,
-    GAME_RES.height
-  );
-
-  console.log(gameRegion);
-
-  return gameRegion;
-}
-
-function gamePosToScreenPos(gamePos: Position, gameRegion: Region): Position {
-  return {
-    x: gameRegion.left + gamePos.x,
-    y: gameRegion.top + gamePos.y,
-  };
-}
-
-function configureAutomation() {
-  screen.config.highlightOpacity = 0.9;
-  screen.config.highlightDurationMs = 300;
-  screen.config.confidence = 0.8;
-
-  keyboard.config.autoDelayMs = 50;
-
-  //mouse.config.mouseSpeed = 5;
-}
-
 async function main() {
   configureAutomation();
+  await globalImgResources.init();
 
   let mtgaRegion: Region;
   //const fixedMTGARegion = new Region(125.12, 172.12, 2560, 1440);
@@ -118,16 +71,40 @@ async function startCapturing(mtgaRegion: Region) {
 
     await searchForCard(cardName, mtgaRegion);
     await sleep(500);
-    await focusFirstCardResult(mtgaRegion);
-    await sleep(500);
-    await capturePreviewedCard(i, mtgaRegion);
-    await keyboard.type(Key.Escape);
-    await sleep(300);
+
+    const wasTheCardFound = await checkIfFoundCardAfterSearch(mtgaRegion);
+    if (wasTheCardFound) {
+      // The card is already being previewed because of the implicit focus
+      // in the check if found function
+
+      await capturePreviewedCard(i, mtgaRegion);
+      await keyboard.type(Key.Escape);
+      await sleep(300);
+    } else {
+      console.error("Card not found");
+    }
 
     console.log("--------------------------\n");
 
     i++;
   }
+}
+
+async function checkIfFoundCardAfterSearch(mtgaRegion: Region) {
+  // Try to focus in the first card result.
+  // If after the focus the profile tab is not found it means we successfully previewd the card
+  // aka, it was found
+  await focusFirstCardResult(mtgaRegion);
+  await sleep(500);
+
+  const topLeftAreaMtga = new Region(
+    mtgaRegion.left,
+    mtgaRegion.top,
+    mtgaRegion.width * 0.5,
+    mtgaRegion.height * 0.2
+  );
+  const mtgaProfileRegion = await findMTGAProfileRegion(topLeftAreaMtga);
+  return mtgaProfileRegion == null;
 }
 
 async function typeDoubleQuotes() {
@@ -206,73 +183,17 @@ async function capturePreviewedCard(id: number, mtgaRegion: Region) {
   );
 }
 
-function slicePointsBetween(
-  p1: Position,
-  p2: Position,
-  numPoints: number
-): Position[] {
-  const points: Position[] = [];
-
-  const stepX = (p2.x - p1.x) / numPoints;
-  const stepY = (p2.y - p1.y) / numPoints;
-  for (let i = 0; i < numPoints; i++) {
-    points.push({
-      x: p1.x + i * stepX,
-      y: p1.y + i * stepY,
-    });
-  }
-  points.push(p2);
-
-  return points;
-}
-
 async function goToRelativePosition(relPos: Position, mtgaRegion: Region) {
-  const gamepos = relativePosToGamePos(relPos, GAME_RES);
+  const gamePos = relativePosToGamePos(relPos, mtgaRegion);
+  const screenPos = gamePosToScreenPos(gamePos, mtgaRegion);
 
-  const startPoint = await mouse.getPosition();
-  const endPoint = gamePosToScreenPos(gamepos, mtgaRegion);
-
-  const path = slicePointsBetween(startPoint, endPoint, 10);
-  // [startPoint, midPoint, endPoint];
-
-  /* const timeSteps = calculateMovementTimesteps(path.length, 5, linear);
-  console.log(path, timeSteps);
-
-  for (let idx = 0; idx < path.length; ++idx) {
-    const node = path[idx];
-    const minTime = timeSteps[idx];
-    console.log("Wait for ns", minTime);
-
-    await mybusyWaitForNanoSeconds(minTime);
-    await mouse.setPosition(node);
-  } */
-
-  await mouse.move([endPoint]);
+  await mouse.move([screenPos]);
   await sleep(200);
 
   await mouse.pressButton(Button.LEFT);
   await sleep(50);
   await mouse.releaseButton(Button.LEFT);
-  //await mouse.leftClick();
 }
-
-const mybusyWaitForNanoSeconds = (duration: number) => {
-  return new Promise<void>((res) => {
-    const start = process.hrtime.bigint();
-    console.log("Start", start);
-
-    let isWaiting = true;
-    while (isWaiting) {
-      const cur = process.hrtime.bigint();
-      const elapsed = cur - start;
-      console.log(cur, "Elapsed", elapsed, BigInt(duration));
-      if (elapsed > BigInt(duration)) {
-        isWaiting = false;
-      }
-    }
-    res();
-  });
-};
 
 (async () => {
   main();

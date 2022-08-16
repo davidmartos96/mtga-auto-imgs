@@ -1,4 +1,4 @@
-import { Position } from "./types";
+import { Position } from "./util";
 
 export type MTGATemplate =
   | "home"
