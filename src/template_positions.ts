@@ -1,6 +1,13 @@
 import { Position } from "./types";
 
-export type MTGATemplate = "home" | "decks" | "collection" | "craft";
+export type MTGATemplate =
+  | "home"
+  | "decks"
+  | "collection"
+  | "craft"
+  | "search"
+  | "firstGridCard"
+  | "cardPreviewTL";
 
 export const mtgaTemplatePositions: Record<MTGATemplate, Position> = {
   home: {
@@ -13,10 +20,22 @@ export const mtgaTemplatePositions: Record<MTGATemplate, Position> = {
   },
   collection: {
     x: 0.133,
-    y: 0.920,
+    y: 0.92,
   },
   craft: {
-    x: 0.900,
+    x: 0.9,
     y: 0.105,
+  },
+  search: {
+    x: 0.06,
+    y: 0.11,
+  },
+  firstGridCard: {
+    x: 0.06,
+    y: 0.25,
+  },
+  cardPreviewTL: {
+    x: 0.460,
+    y: 0.389,
   },
 };
