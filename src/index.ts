@@ -1,5 +1,4 @@
 import {
-  imageResource,
   Region,
   screen,
   mouse,
@@ -20,7 +19,8 @@ import {
   globalImgResources,
 } from "./finder";
 
-const OUT_CARDS_IMGS_DIR = "out/cards";
+const OUT_DIR = "out";
+const OUT_CARDS_IMGS_DIR = OUT_DIR + "/cards";
 
 async function main() {
   configureAutomation();
@@ -37,21 +37,23 @@ async function main() {
     console.log("Searching for MTGA region");
     mtgaRegion = await findMTGAWindowRegion();
   }
+
+  await startCapturing(mtgaRegion);
+}
+
+async function startCapturing(mtgaRegion: Region) {
+  if (fs.existsSync(OUT_DIR)) {
+    fs.rmdirSync(OUT_DIR, { recursive: true });
+  }
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+
+  // Capture the game window as a way of debugging the mtgaRegion
   await screen.captureRegion(
     "mtga_game_region.png",
     mtgaRegion,
     undefined,
     "out"
   );
-
-  await startCapturing(mtgaRegion);
-}
-
-async function startCapturing(mtgaRegion: Region) {
-  if (fs.existsSync(OUT_CARDS_IMGS_DIR)) {
-    fs.rmdirSync(OUT_CARDS_IMGS_DIR, { recursive: true });
-  }
-  fs.mkdirSync(OUT_CARDS_IMGS_DIR, { recursive: true });
 
   const cardNames = ["Celestial Vault", "Sanctuary Cat", "Portable Hole"];
 
@@ -117,7 +119,7 @@ async function searchForCard(cardName: string, mtgaRegion: Region) {
   // On focus, text is already selected
   await keyboard.type(Key.Backspace);
 
-  await sleep(400);
+  await sleep(200);
 
   await keyboard.type("NAME");
 
@@ -156,18 +158,19 @@ async function focusFirstCardResult(mtgaRegion: Region) {
 }
 
 async function capturePreviewedCard(id: number, mtgaRegion: Region) {
-  const cardCorner = relativePosToGamePos(
+  const cardCornerGamePos = relativePosToGamePos(
     mtgaTemplatePositions.cardPreviewTL,
     mtgaRegion
   );
 
   await sleep(500);
 
-  const cardRelWidth = 0.178;
+  const cardRelWidth = 0.179;
   const cardPixWidth = cardRelWidth * mtgaRegion.width;
   const cardPixHeight = cardPixWidth / 0.716;
 
-  const cardCornerScreenPos = gamePosToScreenPos(cardCorner, mtgaRegion);
+  const cardCornerScreenPos = gamePosToScreenPos(cardCornerGamePos, mtgaRegion);
+
   const cardRegion = new Region(
     cardCornerScreenPos.x,
     cardCornerScreenPos.y,
@@ -175,12 +178,17 @@ async function capturePreviewedCard(id: number, mtgaRegion: Region) {
     cardPixHeight
   );
 
-  await screen.captureRegion(
-    `card_${id}.png`,
+  const outFileName = `card_${id}.png`;
+  const outFolder = OUT_CARDS_IMGS_DIR;
+
+  const outPath = await screen.captureRegion(
+    outFileName,
     cardRegion,
     FileType.PNG,
-    OUT_CARDS_IMGS_DIR
+    outFolder
   );
+
+  console.log("Captured card image: ", outPath);
 }
 
 async function goToRelativePosition(relPos: Position, mtgaRegion: Region) {
