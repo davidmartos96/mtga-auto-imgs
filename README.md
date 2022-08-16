@@ -1,37 +1,37 @@
-# nut.js TypeScript sample
+# MTGA card images
 
-nut.js is written in TypeScript and thus fully supports TypeScript
-
-- [Setup](#setup)
 
 ## Setup
 
-Install TypeScript in your project.
+Install the project
 
 ```shell script
-npm i typescript ts-node
-```
-
-Afterwards, initialize a new TypeScript project:
-
-```shell script
-npx tsc --init
-```
-
-## Write your test
-
-Let's create a simple demo test:
-
-```ts
-import { Region, screen } from "@nut-tree/nut-js";
-
-(async () => {
-	await screen.highlight(new Region(100, 200, 300, 400));
-})();
+yarn install
 ```
 
 ## Run
 
-```shell script
-npx ts-node index.ts
-```
+First we need to tell the program which cards we want to process. We can do that in the `input_card_names.ts` file.
+
+Then, we need to open MTG Arena and leave it in the "Home" tab.
+The configuration tested was the game running in 1920x1080 on windowed mode.
+
+Afterwards, run `yarn start`
+
+This will start the process of finding and creating the card images into the "out/cards" folder.
+
+This process goes as follows:
+
+1. Find the MTGA Arena game region
+
+2. Go into Decks -> Collection
+
+4. Toggle the Craft button, so that we can search for cards we don't have
+
+4. For each card
+
+	a. Search it
+
+	b. Click it
+
+	c. Capture the card region and save it into "out/cards"

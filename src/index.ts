@@ -55,7 +55,7 @@ async function startCapturing(mtgaRegion: Region) {
     "out"
   );
 
-  const cardNames = ["Celestial Vault", "Sanctuary Cat", "Portable Hole"];
+  const cardNames = INPUT_CARD_NAMES;
 
   await goToDecks(mtgaRegion);
   await sleep(2000);

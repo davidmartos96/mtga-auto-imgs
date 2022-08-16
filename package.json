@@ -13,7 +13,7 @@
     "url": "https://s1h.org"
   },
   "scripts": {
-    "test": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts"
   },
   "license": "MIT",
   "bugs": {
