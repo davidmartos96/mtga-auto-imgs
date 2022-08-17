@@ -13,6 +13,9 @@ import {
   FileType,
 } from "@nut-tree/nut-js";
 import { OUT_CARDS_IMGS_DIR } from "./config";
+import { cropCardRect } from "./image-process";
+import path, { join } from "path";
+import os from "os";
 
 export class Driver {
   async searchForCard(cardName: string, mtgaRegion: Region) {
@@ -73,7 +76,7 @@ export class Driver {
 
     await sleep(500);
 
-    const cardRelWidth = 0.179;
+    const cardRelWidth = 0.186;
     const cardPixWidth = cardRelWidth * mtgaRegion.width;
     const cardPixHeight = cardPixWidth / 0.716;
 
@@ -89,15 +92,18 @@ export class Driver {
       cardPixHeight
     );
 
-    const outFileName = `card_${id}.png`;
-    const outFolder = OUT_CARDS_IMGS_DIR;
-
-    const outPath = await screen.captureRegion(
-      outFileName,
+    // This will first get an over optimistic area of the card to then crop the card borders
+    const tmpDir = os.tmpdir();
+    const tmpCardRegionFileName = `card_region_${id}.png`;
+    const cardRegionFile = await screen.captureRegion(
+      tmpCardRegionFileName,
       cardRegion,
       FileType.PNG,
-      outFolder
+      tmpDir
     );
+
+    const outPath = join(OUT_CARDS_IMGS_DIR, `card_${id}.png`)
+    await cropCardRect(cardRegionFile, outPath);
 
     console.log("Captured card image: ", outPath);
   }

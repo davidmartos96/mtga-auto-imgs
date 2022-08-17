@@ -17,7 +17,7 @@ import {
   relativePosToGamePos,
   Size,
 } from "./util";
-import { configureAutomation, OUT_DIR } from "./config";
+import { configureAutomation, OUT_CARDS_IMGS_DIR, OUT_DIR } from "./config";
 import {
   findMTGAProfileRegion,
   findMTGAWindowRegion,
@@ -26,6 +26,7 @@ import {
 import { INPUT_CARD_NAMES } from "./input_card_names";
 import { exit } from "process";
 import { Driver } from "./driver";
+import { cropCardRect } from "./image-process";
 
 async function main() {
   configureAutomation();
@@ -66,6 +67,7 @@ async function startCapturing(screenSize: Size, mtgaRegion: Region) {
     fs.rmSync(OUT_DIR, { recursive: true });
   }
   fs.mkdirSync(OUT_DIR, { recursive: true });
+  fs.mkdirSync(OUT_CARDS_IMGS_DIR);
 
   await captureMTGARegion(screenSize, mtgaRegion);
 

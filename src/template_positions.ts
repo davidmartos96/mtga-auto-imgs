@@ -40,7 +40,7 @@ export const mtgaTemplatePositions: Record<MTGATemplate, Position> = {
     y: 0.25,
   },
   cardPreviewTL: {
-    x: 0.4118,
-    y: 0.2680,
+    x: 0.4080,
+    y: 0.2600,
   },
 };

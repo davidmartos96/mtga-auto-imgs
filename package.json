@@ -24,6 +24,7 @@
     "@nut-tree/nut-js": "2.1.1",
     "@nut-tree/template-matcher": "^1.0.1",
     "@types/node": "^16.7.13",
+    "opencv4nodejs-prebuilt": "^5.3.4",
     "ts-node": "^10.2.1",
     "typescript": "^4.7.4"
   }
