@@ -11,13 +11,20 @@ import {
 import fs from "fs";
 import "@nut-tree/template-matcher";
 import { mtgaTemplatePositions } from "./template_positions";
-import { gamePosToScreenPos, Position, relativePosToGamePos } from "./util";
+import {
+  gamePosToScreenPos,
+  Position,
+  relativePosToGamePos,
+  Size,
+} from "./util";
 import { configureAutomation } from "./config";
 import {
   findMTGAProfileRegion,
   findMTGAWindowRegion,
   globalImgResources,
 } from "./finder";
+import { INPUT_CARD_NAMES } from "./input_card_names";
+import { exit } from "process";
 
 const OUT_DIR = "out";
 const OUT_CARDS_IMGS_DIR = OUT_DIR + "/cards";
@@ -25,6 +32,15 @@ const OUT_CARDS_IMGS_DIR = OUT_DIR + "/cards";
 async function main() {
   configureAutomation();
   await globalImgResources.init();
+
+  const delayMs = 2000;
+  await sleep(delayMs);
+
+  const screenSize: Size = {
+    width: await screen.width(),
+    height: await screen.height(),
+  };
+  console.log("Screen size", screenSize);
 
   let mtgaRegion: Region;
   //const fixedMTGARegion = new Region(125.12, 172.12, 2560, 1440);
@@ -38,22 +54,18 @@ async function main() {
     mtgaRegion = await findMTGAWindowRegion();
   }
 
-  await startCapturing(mtgaRegion);
+  await startCapturing(screenSize, mtgaRegion);
 }
 
-async function startCapturing(mtgaRegion: Region) {
+async function startCapturing(screenSize: Size, mtgaRegion: Region) {
   if (fs.existsSync(OUT_DIR)) {
-    fs.rmdirSync(OUT_DIR, { recursive: true });
+    fs.rmSync(OUT_DIR, { recursive: true });
   }
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  // Capture the game window as a way of debugging the mtgaRegion
-  await screen.captureRegion(
-    "mtga_game_region.png",
-    mtgaRegion,
-    undefined,
-    "out"
-  );
+  await captureMTGARegion(screenSize, mtgaRegion);
+
+  return;
 
   const cardNames = INPUT_CARD_NAMES;
 
@@ -89,6 +101,30 @@ async function startCapturing(mtgaRegion: Region) {
     console.log("--------------------------\n");
 
     i++;
+  }
+}
+
+async function captureMTGARegion(screenSize: Size, mtgaRegion: Region) {
+  // Capture the game window as a way of debugging the mtgaRegion
+  const croppedMtgaRegion = new Region(
+    mtgaRegion.left,
+    mtgaRegion.top,
+    Math.min(mtgaRegion.width, screenSize.width - mtgaRegion.left),
+    Math.min(mtgaRegion.height, screenSize.height - mtgaRegion.top)
+  );
+  await screen.captureRegion(
+    "mtga_game_region.png",
+    croppedMtgaRegion,
+    undefined,
+    "out"
+  );
+
+  if (
+    mtgaRegion.left + mtgaRegion.width > screenSize.width ||
+    mtgaRegion.top + mtgaRegion.height > screenSize.height
+  ) {
+    console.error(`[ERROR] MTGA region is not fully visible in the screen`);
+    exit(1);
   }
 }
 

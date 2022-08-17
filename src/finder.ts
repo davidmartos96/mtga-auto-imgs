@@ -16,8 +16,10 @@ export const globalImgResources: ImageResources = new ImageResources();
 
 export async function findMTGAWindowRegion(): Promise<Region> {
   // Search only in a top left corner of the screen
-  const searchRegion = new Region(0, 0, 1000, 1000);
-  //const searchRegion = undefined
+  //const searchRegion = new Region(0, 0, 1000, 1000);
+
+  // Search in the whole screen
+  const searchRegion = undefined
 
   const mtgaProfileRegion = await findMTGAProfileRegion(searchRegion);
   if (!mtgaProfileRegion) {
