@@ -40,8 +40,6 @@ export async function findMTGAWindowRegion(): Promise<Region> {
     GAME_RES.height
   );
 
-  console.log(gameRegion);
-
   return gameRegion;
 }
 
