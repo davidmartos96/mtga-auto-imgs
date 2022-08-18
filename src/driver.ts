@@ -1,6 +1,6 @@
 import { findMTGAProfileRegion } from "./finder";
 import { mtgaTemplatePositions } from "./template_positions";
-import { relativePosToGamePos, gamePosToScreenPos, Position } from "./util";
+import { relativePosToGamePos, gamePosToScreenPos, Position, getOutCardImagesDir } from "./util";
 
 import {
   Region,
@@ -12,9 +12,8 @@ import {
   sleep,
   FileType,
 } from "@nut-tree/nut-js";
-import { OUT_CARDS_IMGS_DIR } from "./config";
 import { cropCardRect } from "./image-process";
-import path, { join } from "path";
+import { join } from "path";
 import os from "os";
 
 export class Driver {
@@ -102,7 +101,7 @@ export class Driver {
       tmpDir
     );
 
-    const outPath = join(OUT_CARDS_IMGS_DIR, `card_${id}.png`)
+    const outPath = join(getOutCardImagesDir(), `card_${id}.png`)
     await cropCardRect(cardRegionFile, outPath);
 
     console.log("Captured card image: ", outPath);

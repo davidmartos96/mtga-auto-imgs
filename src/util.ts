@@ -1,4 +1,6 @@
 import { Region } from "@nut-tree/nut-js";
+import { join } from "path";
+import { APP_CONFIG } from "./config/config";
 
 export type Size = {
   width: number;
@@ -22,4 +24,7 @@ export function gamePosToScreenPos(gamePos: Position, gameRegion: Region): Posit
     x: gameRegion.left + gamePos.x,
     y: gameRegion.top + gamePos.y,
   };
+}
+export function getOutCardImagesDir(): string {
+  return join(APP_CONFIG.outDir, "cards");
 }

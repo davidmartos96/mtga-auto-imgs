@@ -1,5 +1,5 @@
 import { imageResource, Region, screen, Image } from "@nut-tree/nut-js";
-import { GAME_RES } from "./config";
+import { APP_CONFIG } from "./config/config";
 import { mtgaTemplatePositions } from "./template_positions";
 import { relativePosToGamePos } from "./util";
 
@@ -19,7 +19,7 @@ export async function findMTGAWindowRegion(): Promise<Region> {
   //const searchRegion = new Region(0, 0, 1000, 1000);
 
   // Search in the whole screen
-  const searchRegion = undefined
+  const searchRegion = undefined;
 
   const mtgaProfileRegion = await findMTGAProfileRegion(searchRegion);
   if (!mtgaProfileRegion) {
@@ -28,16 +28,18 @@ export async function findMTGAWindowRegion(): Promise<Region> {
 
   await screen.highlight(mtgaProfileRegion);
 
+  const gameRes = APP_CONFIG.gameResolution;
+
   const mtgaProfilePos = relativePosToGamePos(
     mtgaTemplatePositions.profile,
-    GAME_RES
+    gameRes
   );
 
   const gameRegion = new Region(
     Math.max(0, mtgaProfileRegion.left - mtgaProfilePos.x),
     Math.max(0, mtgaProfileRegion.top - mtgaProfilePos.y),
-    GAME_RES.width,
-    GAME_RES.height
+    gameRes.width,
+    gameRes.height
   );
 
   return gameRegion;

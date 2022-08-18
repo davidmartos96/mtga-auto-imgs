@@ -7,22 +7,14 @@ import {
 } from "@nut-tree/nut-js";
 import fs from "fs";
 import "@nut-tree/template-matcher";
-import {
-  Size,
-} from "./util";
-import { configureAutomation, OUT_CARDS_IMGS_DIR, OUT_DIR } from "./config";
-import {
-  findMTGAWindowRegion,
-  globalImgResources,
-} from "./finder";
-import { INPUT_CARD_NAMES } from "./input_card_names";
+import { getOutCardImagesDir, Size } from "./util";
+import { APP_CONFIG } from "./config/config";
+import { findMTGAWindowRegion, globalImgResources } from "./finder";
+import { INPUT_CARD_NAMES } from "./config/input_card_names";
 import { exit } from "process";
 import { Driver } from "./driver";
 
 async function main() {
-  // await cropCardRect("./test.png", "out/test_out.png");
-  // return;
-
   configureAutomation();
   await globalImgResources.init();
 
@@ -41,6 +33,14 @@ async function main() {
   await startCapturing(screenSize, mtgaRegion);
 }
 
+function configureAutomation() {
+  screen.config.highlightOpacity = 0.9;
+  screen.config.highlightDurationMs = 600;
+  screen.config.confidence = 0.8;
+
+  keyboard.config.autoDelayMs = 50;
+}
+
 async function obtainMTGARegion() {
   let mtgaRegion: Region;
   //const fixedMTGARegion = new Region(125.12, 172.12, 2560, 1440);
@@ -57,11 +57,12 @@ async function obtainMTGARegion() {
 }
 
 async function startCapturing(screenSize: Size, mtgaRegion: Region) {
-  if (fs.existsSync(OUT_DIR)) {
-    fs.rmSync(OUT_DIR, { recursive: true });
+  const outDir = APP_CONFIG.outDir
+  if (fs.existsSync(outDir)) {
+    fs.rmSync(outDir, { recursive: true });
   }
-  fs.mkdirSync(OUT_DIR, { recursive: true });
-  fs.mkdirSync(OUT_CARDS_IMGS_DIR);
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.mkdirSync(getOutCardImagesDir());
 
   await captureMTGARegion(screenSize, mtgaRegion);
 
