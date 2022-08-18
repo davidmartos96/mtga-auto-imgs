@@ -1,10 +1,4 @@
-import {
-  Region,
-  screen,
-  keyboard,
-  Key,
-  sleep,
-} from "@nut-tree/nut-js";
+import { Region, screen, keyboard, Key, sleep } from "@nut-tree/nut-js";
 import fs from "fs";
 import "@nut-tree/template-matcher";
 import { getOutCardImagesDir, Size } from "./util";
@@ -53,11 +47,15 @@ async function obtainMTGARegion() {
     console.log("Searching for MTGA region");
     mtgaRegion = await findMTGAWindowRegion();
   }
+
+  // Show region
+  await screen.highlight(mtgaRegion);
+
   return mtgaRegion;
 }
 
 async function startCapturing(screenSize: Size, mtgaRegion: Region) {
-  const outDir = APP_CONFIG.outDir
+  const outDir = APP_CONFIG.outDir;
   if (fs.existsSync(outDir)) {
     fs.rmSync(outDir, { recursive: true });
   }
@@ -75,7 +73,7 @@ async function startCapturing(screenSize: Size, mtgaRegion: Region) {
   await driver.goToDecks(mtgaRegion);
   await sleep(2000);
   await driver.goToCollection(mtgaRegion);
-  await sleep(2000);
+  await sleep(4000);
 
   await driver.showNotCollectedCards(mtgaRegion);
   await sleep(500);

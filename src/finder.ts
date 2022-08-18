@@ -1,7 +1,7 @@
 import { imageResource, Region, screen, Image } from "@nut-tree/nut-js";
 import { APP_CONFIG } from "./config/config";
 import { mtgaTemplatePositions } from "./template_positions";
-import { relativePosToGamePos } from "./util";
+import { relativePosToGamePos, Size } from "./util";
 
 class ImageResources {
   mtgaProfileImgRes: Image | undefined;
@@ -28,7 +28,13 @@ export async function findMTGAWindowRegion(): Promise<Region> {
 
   await screen.highlight(mtgaProfileRegion);
 
-  const gameRes = APP_CONFIG.gameResolution;
+  const nonScaledGameRes = APP_CONFIG.gameResolution;
+  const desktopScale = APP_CONFIG.desktopScale;
+
+  const gameRes: Size = {
+    width: nonScaledGameRes.width / desktopScale,
+    height: nonScaledGameRes.height / desktopScale,
+  };
 
   const mtgaProfilePos = relativePosToGamePos(
     mtgaTemplatePositions.profile,
