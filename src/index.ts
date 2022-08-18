@@ -1,34 +1,28 @@
 import {
   Region,
   screen,
-  mouse,
-  Button,
   keyboard,
   Key,
   sleep,
-  FileType,
 } from "@nut-tree/nut-js";
 import fs from "fs";
 import "@nut-tree/template-matcher";
-import { mtgaTemplatePositions } from "./template_positions";
 import {
-  gamePosToScreenPos,
-  Position,
-  relativePosToGamePos,
   Size,
 } from "./util";
 import { configureAutomation, OUT_CARDS_IMGS_DIR, OUT_DIR } from "./config";
 import {
-  findMTGAProfileRegion,
   findMTGAWindowRegion,
   globalImgResources,
 } from "./finder";
 import { INPUT_CARD_NAMES } from "./input_card_names";
 import { exit } from "process";
 import { Driver } from "./driver";
-import { cropCardRect } from "./image-process";
 
 async function main() {
+  // await cropCardRect("./test.png", "out/test_out.png");
+  // return;
+
   configureAutomation();
   await globalImgResources.init();
 

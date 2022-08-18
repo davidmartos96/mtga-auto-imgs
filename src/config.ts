@@ -4,15 +4,15 @@ import { Size } from "./util";
 export const OUT_DIR = "out";
 export const OUT_CARDS_IMGS_DIR = OUT_DIR + "/cards";
 
-// export const GAME_RES: Size = {
-//   width: 2560,
-//   height: 1440,
-// };
-
 export const GAME_RES: Size = {
-  width: 1920,
-  height: 1080,
+  width: 2560,
+  height: 1440,
 };
+
+// export const GAME_RES: Size = {
+//   width: 1920,
+//   height: 1080,
+// };
 
 // export const GAME_RES: Size = {
 //   width: 3840,
