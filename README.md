@@ -11,10 +11,10 @@ npm install
 
 ## Run
 
-First we need to tell the program which cards we want to process. We can do that in the `input_card_names.ts` file.
+First we need to configure the program parameters in the `config/config.ts` file. Most important here is the game resolution and the desktop scale (which usually is 1.0).
+We also need to tell the program which cards we want to process. We can do that in the `config/input_card_names.ts` file.
 
-Then, we need to open MTG Arena and leave it in the "Home" tab.
-The configuration tested was the game running in 1920x1080 on windowed mode.
+Then, we need to open MTG Arena and leave it in the "Home" tab. We need to make sure the game is running on windowed mode and in the same resolution as in the config file.
 
 Afterwards, run `npm run start`
 
@@ -34,4 +34,4 @@ This process goes as follows:
 
 	b. Click it
 
-	c. Capture the card region and save it into "out/cards"
+	c. Capture the card region and save it into `out/cards`. This step includes some image processing using OpenCV to crop the card borders and round them.
