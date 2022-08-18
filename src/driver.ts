@@ -1,6 +1,11 @@
 import { findMTGAProfileRegion } from "./finder";
 import { mtgaTemplatePositions } from "./template_positions";
-import { relativePosToGamePos, gamePosToScreenPos, Position, getOutCardImagesDir } from "./util";
+import {
+  relativePosToGamePos,
+  gamePosToScreenPos,
+  Position,
+  getOutCardImagesDir,
+} from "./util";
 
 import {
   Region,
@@ -17,7 +22,7 @@ import { join } from "path";
 import os from "os";
 
 export class Driver {
-  async searchForCard(cardName: string, mtgaRegion: Region) {
+  async searchForCard(cardName: string, setCode: string, mtgaRegion: Region) {
     await this.focusCardSearch(mtgaRegion);
 
     // On focus, text is already selected
@@ -25,14 +30,19 @@ export class Driver {
 
     await sleep(200);
 
+    // Type Name filter
     await keyboard.type("NAME");
-
-    // Double colon
-    await keyboard.type(Key.LeftShift, Key.Period);
-
+    await typeDoubleColon();
     await typeDoubleQuotes();
     await keyboard.type(cardName);
     await typeDoubleQuotes();
+
+    if (setCode != "") {
+      // Type Set filter
+      await keyboard.type(" E");
+      await typeDoubleColon();
+      await keyboard.type(setCode);
+    }
 
     await keyboard.type(Key.Enter);
   }
@@ -101,7 +111,7 @@ export class Driver {
       tmpDir
     );
 
-    const outPath = join(getOutCardImagesDir(), `card_${id}.png`)
+    const outPath = join(getOutCardImagesDir(), `card_${id}.png`);
     await cropCardRect(cardRegionFile, outPath);
 
     console.log("Captured card image: ", outPath);
@@ -139,4 +149,8 @@ export class Driver {
 
 async function typeDoubleQuotes() {
   await keyboard.type(Key.LeftShift, Key.Num2);
+}
+
+async function typeDoubleColon() {
+  await keyboard.type(Key.LeftShift, Key.Period);
 }

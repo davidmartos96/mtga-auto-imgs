@@ -4,7 +4,7 @@ import "@nut-tree/template-matcher";
 import { getOutCardImagesDir, Size } from "./util";
 import { APP_CONFIG } from "./config/config";
 import { findMTGAWindowRegion, globalImgResources } from "./finder";
-import { INPUT_CARD_NAMES } from "./config/input_card_names";
+import { INPUT_CARDS } from "./config/input_cards";
 import { exit } from "process";
 import { Driver } from "./driver";
 
@@ -48,8 +48,9 @@ async function obtainMTGARegion() {
     mtgaRegion = await findMTGAWindowRegion();
   }
 
-  // Show region
+  // Highlight the game region for debugging purposes
   await screen.highlight(mtgaRegion);
+  await sleep(500);
 
   return mtgaRegion;
 }
@@ -66,7 +67,7 @@ async function startCapturing(screenSize: Size, mtgaRegion: Region) {
 
   //return;
 
-  const cardNames = INPUT_CARD_NAMES;
+  const inputCards = INPUT_CARDS;
 
   const driver = new Driver();
 
@@ -81,10 +82,13 @@ async function startCapturing(screenSize: Size, mtgaRegion: Region) {
   console.log("");
 
   let i = 0;
-  for (const cardName of cardNames) {
-    console.log(`------ ${cardName} ------`);
+  for (const inputCard of inputCards) {
+    const cardName = inputCard[0];
+    const setCode = inputCard[1];
 
-    await driver.searchForCard(cardName, mtgaRegion);
+    console.log(`------ ${cardName} SET='${setCode}' ------`);
+
+    await driver.searchForCard(cardName, setCode, mtgaRegion);
     await sleep(500);
 
     const wasTheCardFound = await driver.checkIfFoundCardAfterSearch(
