@@ -105,6 +105,9 @@ async function startCapturing(screenSize: Size, mtgaRegion: Region) {
 
     i++;
   }
+
+  console.log("Finished!!");
+  
 }
 
 async function captureMTGARegion(screenSize: Size, mtgaRegion: Region) {

@@ -6,7 +6,7 @@
 Install the project
 
 ```shell script
-yarn install
+npm install
 ```
 
 ## Run
@@ -16,7 +16,7 @@ First we need to tell the program which cards we want to process. We can do that
 Then, we need to open MTG Arena and leave it in the "Home" tab.
 The configuration tested was the game running in 1920x1080 on windowed mode.
 
-Afterwards, run `yarn start`
+Afterwards, run `npm run start`
 
 This will start the process of finding and creating the card images into the "out/cards" folder.
 

@@ -27,5 +27,10 @@
     "opencv4nodejs-prebuilt": "^5.3.4",
     "ts-node": "^10.2.1",
     "typescript": "^4.7.4"
+  },
+  "overrides": {
+    "@nut-tree/nut-js": {
+      "@nut-tree/libnut": "2.1.9-next.20220817050555"
+    }
   }
 }

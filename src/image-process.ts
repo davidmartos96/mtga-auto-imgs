@@ -6,13 +6,7 @@ export async function cropCardRect(
 ): Promise<void> {
   const image = await cv.imreadAsync(inputImgPath);
 
-  console.log(image.sizes, image.elemSize);
-
   const hsv = image.cvtColor(cv.COLOR_BGR2HSV);
-
-  const splitted = hsv.splitChannels();
-
-  await cv.imwriteAsync("./out/v.png", splitted[2]);
 
   const lower = new cv.Vec3(0, 0, 0);
   const upper = new cv.Vec3(0, 0, 50);
@@ -20,7 +14,7 @@ export async function cropCardRect(
 
   //console.log(mask.sizes, mask.elemSize);
 
-  await cv.imwriteAsync("./out/mask.png", mask);
+  // await cv.imwriteAsync("./out/mask.png", mask);
 
   const wholeArea = image.cols * image.rows;
   const contours = mask
@@ -41,7 +35,7 @@ export async function cropCardRect(
   const cornerRadius = croppedCard.cols * 0.055;
   const roundedBorders = await roundCorners(croppedCard, cornerRadius);
 
-  cv.imwrite("./out/test_out_debug.png", debugOut);
+  //cv.imwrite("./out/test_out_debug.png", debugOut);
   cv.imwrite(outputImgPath, roundedBorders);
   //cv.imwrite("./out/test_out.png", croppedCard);
 
