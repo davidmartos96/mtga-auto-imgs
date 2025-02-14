@@ -4,17 +4,29 @@ export async function cropCardRect(
   inputImgPath: string,
   outputImgPath: string
 ): Promise<void> {
-  const image = await cv.imreadAsync(inputImgPath);
+  let image = await cv.imreadAsync(inputImgPath);
+
+  // image = image.gaussianBlur(new cv.Size(3, 3), 0);
 
   const hsv = image.cvtColor(cv.COLOR_BGR2HSV);
+  const gray = image.cvtColor(cv.COLOR_BGR2GRAY);
+
+  const mask2 = gray.threshold(50, 255, cv.THRESH_BINARY_INV);
+  await cv.imwriteAsync("./out/mask2.png", mask2);
 
   const lower = new cv.Vec3(0, 0, 0);
-  const upper = new cv.Vec3(0, 0, 50);
-  const mask = hsv.inRange(lower, upper);
+  const upper = new cv.Vec3(180, 50, 90);
+  let mask = hsv.inRange(lower, upper);
+
+  mask = mask.dilate(new cv.Mat(3, 3, cv.CV_8UC1, 1));
 
   //console.log(mask.sizes, mask.elemSize);
 
-  // await cv.imwriteAsync("./out/mask.png", mask);
+  await cv.imwriteAsync("./out/input.png", image);
+  await cv.imwriteAsync("./out/gray.png", gray);
+  await cv.imwriteAsync("./out/input.png", image);
+  await cv.imwriteAsync("./out/hsv.png", hsv);
+  await cv.imwriteAsync("./out/mask.png", mask);
 
   const wholeArea = image.cols * image.rows;
   const contours = mask
@@ -25,7 +37,15 @@ export async function cropCardRect(
       return area > wholeArea * 0.6;
     });
   const effectiveContours = [contours[0]];
-  const cardRect = effectiveContours[0].boundingRect();
+  let cardRect = effectiveContours[0].boundingRect()
+  
+  const rectPad = 3
+  cardRect = new cv.Rect(
+    cardRect.x + rectPad,
+    cardRect.y + rectPad,
+    cardRect.width - rectPad * 2,
+    cardRect.height - rectPad * 2
+  )
 
   const debugOut = image.copy();
 

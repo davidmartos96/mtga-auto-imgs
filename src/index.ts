@@ -3,11 +3,12 @@ import fs from "fs";
 import "@udarrr/template-matcher";
 import { getOutCardImagesDir, Size } from "./util";
 import { APP_CONFIG } from "./config/config";
-import { findMTGAWindowRegion, globalImgResources } from "./finder";
+import { globalImgResources } from "./finder";
 import { INPUT_CARDS } from "./config/input_cards";
 import { exit } from "process";
 import { Driver } from "./driver";
 import { mtgaTemplatePositions } from "./template_positions";
+import { openWindows } from "get-windows";
 
 async function main() {
   configureAutomation();
@@ -37,17 +38,26 @@ function configureAutomation() {
 }
 
 async function obtainMTGARegion() {
-  let mtgaRegion: Region;
-  //const fixedMTGARegion = new Region(125.12, 172.12, 2560, 1440);
-  const fixedMTGARegion: Region | null = null;
+  const windows = await openWindows();
 
-  if (fixedMTGARegion) {
-    console.log("Using fixed MTGA region");
-    mtgaRegion = fixedMTGARegion;
-  } else {
-    console.log("Searching for MTGA region");
-    mtgaRegion = await findMTGAWindowRegion();
+  if (windows.length == 0) {
+    throw new Error("No open windows");
   }
+
+  const mtgaWin = windows.filter((window) => {
+    return window.title === "MTGA";
+  })[0];
+
+  if (!mtgaWin) {
+    throw new Error("MTGA window not found");
+  }
+
+  const mtgaRegion: Region = new Region(
+    mtgaWin.bounds.x,
+    mtgaWin.bounds.y,
+    mtgaWin.bounds.width,
+    mtgaWin.bounds.height
+  );
 
   // Highlight the game region for debugging purposes
   await screen.highlight(mtgaRegion);
@@ -112,7 +122,6 @@ async function startCapturing(screenSize: Size, mtgaRegion: Region) {
   }
 
   console.log("Finished!!");
-  
 }
 
 async function captureMTGARegion(screenSize: Size, mtgaRegion: Region) {
@@ -136,10 +145,16 @@ async function captureMTGARegion(screenSize: Size, mtgaRegion: Region) {
   ) {
     console.error(`[ERROR] MTGA region is not fully visible in the screen`);
     if (mtgaRegion.left + mtgaRegion.width > screenSize.width) {
-      console.error(`[ERROR] MTGA region is too wide`, mtgaRegion.left + mtgaRegion.width - screenSize.width);
+      console.error(
+        `[ERROR] MTGA region is too wide`,
+        mtgaRegion.left + mtgaRegion.width - screenSize.width
+      );
     }
     if (mtgaRegion.top + mtgaRegion.height > screenSize.height) {
-      console.error(`[ERROR] MTGA region is too high`, mtgaRegion.top + mtgaRegion.height - screenSize.height);
+      console.error(
+        `[ERROR] MTGA region is too high`,
+        mtgaRegion.top + mtgaRegion.height - screenSize.height
+      );
     }
     exit(1);
   }

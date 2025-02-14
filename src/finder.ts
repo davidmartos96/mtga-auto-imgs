@@ -14,42 +14,6 @@ class ImageResources {
 }
 export const globalImgResources: ImageResources = new ImageResources();
 
-export async function findMTGAWindowRegion(): Promise<Region> {
-  // Search only in a top left corner of the screen
-  //const searchRegion = new Region(0, 0, 1000, 1000);
-
-  // Search in the whole screen
-  const searchRegion = undefined;
-
-  const mtgaProfileRegion = await findMTGAProfileRegion(searchRegion);
-  if (!mtgaProfileRegion) {
-    throw new Error("MTGA profile tab not found");
-  }
-
-  await screen.highlight(mtgaProfileRegion);
-
-  const nonScaledGameRes = APP_CONFIG.gameResolution;
-  const desktopScale = APP_CONFIG.desktopScale;
-
-  const gameRes: Size = {
-    width: nonScaledGameRes.width / desktopScale,
-    height: nonScaledGameRes.height / desktopScale,
-  };
-
-  const mtgaProfilePos = relativePosToGamePos(
-    mtgaTemplatePositions.profile,
-    gameRes
-  );
-
-  const gameRegion = new Region(
-    Math.max(0, mtgaProfileRegion.left - mtgaProfilePos.x),
-    Math.max(0, mtgaProfileRegion.top - mtgaProfilePos.y),
-    gameRes.width,
-    gameRes.height
-  );
-
-  return gameRegion;
-}
 
 export async function findMTGAProfileRegion(
   searchRegion?: Region

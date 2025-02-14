@@ -117,16 +117,22 @@ export class Driver {
     console.log("Captured card image: ", outPath);
   }
 
-  async goToRelativePosition(relPos: Position, mtgaRegion: Region) {
+  async goToRelativePosition(
+    relPos: Position,
+    mtgaRegion: Region,
+    click = true
+  ) {
     const gamePos = relativePosToGamePos(relPos, mtgaRegion);
     const screenPos = gamePosToScreenPos(gamePos, mtgaRegion);
 
     await mouse.move([screenPos]);
     await sleep(200);
 
-    await mouse.pressButton(Button.LEFT);
-    await sleep(50);
-    await mouse.releaseButton(Button.LEFT);
+    if (click) {
+      await mouse.pressButton(Button.LEFT);
+      await sleep(50);
+      await mouse.releaseButton(Button.LEFT);
+    }
   }
 
   async checkIfFoundCardAfterSearch(mtgaRegion: Region) {

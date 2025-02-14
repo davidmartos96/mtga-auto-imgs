@@ -14,28 +14,25 @@ export const mtgaTemplatePositions: Record<MTGATemplate, Position> = {
     x: 0.073,
     y: 0.004,
   },
-  decks: {
-    x: 0.137,
-    y: 0.025,
-  },
+  decks: { x: 0.16, y: 0.025 },
   collection: {
     x: 0.133,
     y: 0.92,
   },
   craft: {
     x: 0.9,
-    y: 0.105,
+    y: 0.125,
   },
   search: {
     x: 0.06,
-    y: 0.11,
+    y: 0.125,
   },
   firstGridCard: {
-    x: 0.06,
-    y: 0.25,
+    x: 0.10,
+    y: 0.4,
   },
   cardPreviewTL: {
-    x: 0.4080,
-    y: 0.2600,
+    x: 0.408,
+    y: 0.26,
   },
 };

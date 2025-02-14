@@ -13,7 +13,7 @@
     "url": "https://s1h.org"
   },
   "scripts": {
-    "start": "ts-node src/index.ts"
+    "start": "tsx src/index.ts"
   },
   "license": "MIT",
   "bugs": {
@@ -22,11 +22,12 @@
   "homepage": "https://github.com/nut-tree/trailmix#trailmix",
   "dependencies": {
     "@nut-tree-fork/nut-js": "^4.2.4",
-    "@udarrr/template-matcher": "^4.6.2"
+    "@udarrr/template-matcher": "^4.6.2",
+    "get-windows": "^9.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }
