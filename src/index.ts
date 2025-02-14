@@ -1,12 +1,13 @@
-import { Region, screen, keyboard, Key, sleep } from "@nut-tree/nut-js";
+import { Region, screen, keyboard, Key, sleep } from "@nut-tree-fork/nut-js";
 import fs from "fs";
-import "@nut-tree/template-matcher";
+import "@udarrr/template-matcher";
 import { getOutCardImagesDir, Size } from "./util";
 import { APP_CONFIG } from "./config/config";
 import { findMTGAWindowRegion, globalImgResources } from "./finder";
 import { INPUT_CARDS } from "./config/input_cards";
 import { exit } from "process";
 import { Driver } from "./driver";
+import { mtgaTemplatePositions } from "./template_positions";
 
 async function main() {
   configureAutomation();
@@ -134,6 +135,12 @@ async function captureMTGARegion(screenSize: Size, mtgaRegion: Region) {
     mtgaRegion.top + mtgaRegion.height > screenSize.height
   ) {
     console.error(`[ERROR] MTGA region is not fully visible in the screen`);
+    if (mtgaRegion.left + mtgaRegion.width > screenSize.width) {
+      console.error(`[ERROR] MTGA region is too wide`, mtgaRegion.left + mtgaRegion.width - screenSize.width);
+    }
+    if (mtgaRegion.top + mtgaRegion.height > screenSize.height) {
+      console.error(`[ERROR] MTGA region is too high`, mtgaRegion.top + mtgaRegion.height - screenSize.height);
+    }
     exit(1);
   }
 }

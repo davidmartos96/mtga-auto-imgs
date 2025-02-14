@@ -1,4 +1,4 @@
-import { Region } from "@nut-tree/nut-js";
+import { Region } from "@nut-tree-fork/nut-js";
 import { join } from "path";
 import { APP_CONFIG } from "./config/config";
 

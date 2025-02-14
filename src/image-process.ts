@@ -1,4 +1,4 @@
-import * as cv from "opencv4nodejs-prebuilt";
+import * as cv from "opencv4nodejs-prebuilt-install";
 
 export async function cropCardRect(
   inputImgPath: string,
@@ -35,7 +35,7 @@ export async function cropCardRect(
   const cornerRadius = croppedCard.cols * 0.055;
   const roundedBorders = await roundCorners(croppedCard, cornerRadius);
 
-  //cv.imwrite("./out/test_out_debug.png", debugOut);
+  // cv.imwrite("./out/test_out_debug.png", debugOut);
   cv.imwrite(outputImgPath, roundedBorders);
   //cv.imwrite("./out/test_out.png", croppedCard);
 

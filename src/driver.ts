@@ -16,7 +16,7 @@ import {
   Key,
   sleep,
   FileType,
-} from "@nut-tree/nut-js";
+} from "@nut-tree-fork/nut-js";
 import { cropCardRect } from "./image-process";
 import { join } from "path";
 import os from "os";
@@ -117,7 +117,7 @@ export class Driver {
     console.log("Captured card image: ", outPath);
   }
 
-  private async goToRelativePosition(relPos: Position, mtgaRegion: Region) {
+  async goToRelativePosition(relPos: Position, mtgaRegion: Region) {
     const gamePos = relativePosToGamePos(relPos, mtgaRegion);
     const screenPos = gamePosToScreenPos(gamePos, mtgaRegion);
 

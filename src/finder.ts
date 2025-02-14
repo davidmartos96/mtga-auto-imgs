@@ -1,4 +1,4 @@
-import { imageResource, Region, screen, Image } from "@nut-tree/nut-js";
+import { imageResource, Region, screen, Image } from "@nut-tree-fork/nut-js";
 import { APP_CONFIG } from "./config/config";
 import { mtgaTemplatePositions } from "./template_positions";
 import { relativePosToGamePos, Size } from "./util";
@@ -62,6 +62,7 @@ export async function findMTGAProfileRegion(
     });
     return mtgaProfileRegion;
   } catch (e) {
+    console.error(e)
     return null;
   }
 }
