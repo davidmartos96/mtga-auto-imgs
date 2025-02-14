@@ -11,10 +11,8 @@ npm install
 
 ## Run
 
-First we need to configure the program parameters in the `config/config.ts` file. Most important here is the game resolution and the desktop scale (which usually is 1.0).
+First we need to configure the program parameters in the `config/config.ts` file.
 We also need to tell the program which cards we want to process. We can do that in the `config/input_card_names.ts` file.
-
-Then, we need to open MTG Arena and leave it in the "Home" tab. We need to make sure the game is running on windowed mode and in the same resolution as in the config file.
 
 Afterwards, run `npm run start`
 
